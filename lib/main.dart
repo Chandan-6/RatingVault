@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+var suggestedCommentes = [
+  ['Poor', 'Disappointing', 'Not Worth'],
+  ['Fair', 'Mediocre', 'Adequate'],
+  ['Average', 'Satisfactory', 'Decent'],
+  ['Good', 'Impressive', 'Great'],
+  ['Excellent', 'Awesome', 'Exceptional'],
+];
+
 void main() {
   runApp(const MyApp());
 }
@@ -25,7 +33,7 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            FilledButton(
               onPressed: () {
                 showModalBottomSheet<void>(
                   context: context,
@@ -53,6 +61,8 @@ class RatingBottomSheet extends StatefulWidget {
 
 class _RatingBottomSheetState extends State<RatingBottomSheet> {
   int currentRating = 0;
+  Set<String> selectedComments = {};
+  
 
   void updateRating(int n) {
     setState(() {
@@ -60,18 +70,9 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
     });
   }
 
-  var SuggestedCommentes = [
-    ['Poor', 'Disappointing', 'Not Worth'],
-    ['Fair', 'Mediocre', 'Adequate'],
-    ['Average', 'Satisfactory', 'Decent'],
-    ['Good', 'Impressive', 'Great'],
-    ['Excellent', 'Awesome', 'Exceptional'],
-  ];
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 500,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -97,24 +98,20 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
             ),
             currentRating > 0
                 ? Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (index) {
-                          return Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Chip(
-                                label: Text( SuggestedCommentes[currentRating - 1][index], style: TextStyle(fontSize: 12)),
-                                elevation: 20,
-                                padding: EdgeInsets.all(8),
-                                backgroundColor: Colors.greenAccent[100],
-                                shadowColor: Colors.black,  
-                                ),
-                          );
-                        }),
-                      ),
-                      SizedBox(height: 20),
-                    ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: suggestedCommentes[currentRating - 1].map((comment) => FilterChip(
+                          label: Text(comment),
+                          selected: selectedComments.contains(comment),
+                          onSelected: (isSelected) {
+                            setState(() {
+                              if (isSelected) {
+                                selectedComments.add(comment);
+                              } else {
+                                selectedComments.remove(comment);
+                              }
+                            });
+                          },
+                        )).toList(),
                   )
                 : SizedBox(),
           ],
